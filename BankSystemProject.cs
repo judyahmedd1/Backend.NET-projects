@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -62,6 +62,7 @@ namespace project_2
             double amount = double.Parse(Console.ReadLine());
             accbalance[currentuser] += amount;
             histories[currentuser] += $"deposit: {amount} , balance now : {accbalance[currentuser]}\n"; ;
+            CheckBalance();
         }
 
         static void Withdraw()
@@ -77,6 +78,7 @@ namespace project_2
                 accbalance[currentuser] -= withdrawamount;
                 histories[currentuser] += $"withdraw: {withdrawamount} , balance now : {accbalance[currentuser]}\n"; ;
             }
+            CheckBalance();
         }
             static void CheckBalance()
         {
