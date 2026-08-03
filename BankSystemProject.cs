@@ -21,12 +21,26 @@ namespace project_2
         static void CreateAccount()
         {
             int accountnumber = random.Next(1, 1000);
+            while (accnumbers.Contains(accountnumber))
+            {
+                accountnumber = random.Next(1, 1000);
+            };
             Console.WriteLine("your account number is: " + accountnumber);
 
             Console.WriteLine("enter account name");
             string name = Console.ReadLine();
+            
             Console.WriteLine("enter pin");
             string pin = Console.ReadLine();
+            while (true)
+            {
+                Console.WriteLine("enter a 4-digit pin: ");
+                pin = Console.ReadLine();
+                if (pin.Length == 4 && int.TryParse(pin, out _))
+                    break;
+                Console.WriteLine("pin must be 4 digits, re-enter.");
+            }
+            
             Console.WriteLine("enter balance");
             double balance = double.Parse(Console.ReadLine());
 
@@ -39,7 +53,11 @@ namespace project_2
         static void Login()
         {
             Console.WriteLine("enter account number ");
-            int number = int.Parse((Console.ReadLine()));
+            int number;
+             while (!int.TryParse(Console.ReadLine(), out number))
+            {
+                 Console.WriteLine("Invalid account number.");
+            }
 
             Console.WriteLine("enter pin ");
             string pin = Console.ReadLine();
