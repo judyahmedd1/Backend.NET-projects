@@ -75,7 +75,7 @@ namespace projects_1
                 //printing results for each student
                 Console.WriteLine($"student: {students[i]}");
                 Console.WriteLine($"average is: {average}");
-                Console.WriteLine($"level is:   {randomlevel}");
+                Console.WriteLine($"level is: {randomlevel}");
             }
 
         }
