@@ -7,6 +7,21 @@ using System.Threading.Tasks;
 
 namespace project_2
 {
+    enum MainMenu
+{
+    CreateAccount = 1,
+    Login,
+    Exit
+}
+
+enum UserMenu
+{
+    CheckBalance = 1,
+    Deposit,
+    Withdraw,
+    TransactionHistory,
+    Logout
+}
     internal class BankSystem
     {
         
@@ -81,9 +96,9 @@ namespace project_2
         {
             Console.WriteLine("enter amount to deposit ");
             double amount;
-            while (!double.TryParse(Console.ReadLine(),out amount))
+            while (!double.TryParse(Console.ReadLine(),out amount) || amount <= 0)
             {
-                Console.WriteLine("invalid deposit");
+                Console.WriteLine("invalid deposit, must be positive number");
             }
             accbalance[currentuser] += amount;
             histories[currentuser] += $"deposit: {amount} , balance now : {accbalance[currentuser]}\n"; 
@@ -94,8 +109,8 @@ namespace project_2
         {
             Console.WriteLine("enter amount to withdraw ");
             double withdrawamount;
-            while(!double.TryParse(Console.ReadLine(),out withdrawamount)){
-                Console.WriteLine("invalid withdraw amount");
+            while(!double.TryParse(Console.ReadLine(),out withdrawamount)|| withdrawamount <= 0){
+                Console.WriteLine("invalid withdraw amount, must be positive number");
             }
             if (accbalance[currentuser] < withdrawamount)
             {
