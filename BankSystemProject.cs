@@ -9,7 +9,7 @@ namespace project_2
 {
     internal class BankSystem
     {
-        //lists for creating an account 
+        
         static List<int> accnumbers = new List<int>();
         static List<string> accnames = new List<string>();
         static List<double> accbalance = new List<double>();
