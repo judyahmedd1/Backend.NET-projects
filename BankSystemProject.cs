@@ -77,7 +77,11 @@ namespace project_2
         static void Deposit()
         {
             Console.WriteLine("enter amount to deposit ");
-            double amount = double.Parse(Console.ReadLine());
+             double amount;
+             while (!double.TryParse(Console.ReadLine(),out amount))
+             {
+                 Console.WriteLine("invalid deposit");
+             }
             accbalance[currentuser] += amount;
             histories[currentuser] += $"deposit: {amount} , balance now : {accbalance[currentuser]}\n"; ;
             CheckBalance();
