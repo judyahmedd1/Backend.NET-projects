@@ -13,6 +13,10 @@ namespace projects_1
     {
         static double GetAverage(List<double> grades)
         {
+            //ensure no divison by zero 
+            if (grades.Count == 0)
+                return 0.0;
+
             double sum = 0.0;
             for (int i = 0; i < grades.Count; i++)
             {
@@ -40,6 +44,7 @@ namespace projects_1
             students.Add("hana");
             students.Add("menna");
 
+            //assigning values to grades' lists
             List<double> judygrades = new List<double> { 15, 18, 20 };
             List<double> hanagrades = new List<double> { 35, 40, 38 };
             List<double> mennagrades = new List<double> { 55, 60, 58 };
@@ -51,6 +56,7 @@ namespace projects_1
             for (int i = 0; i < students.Count; i++)
             {
                 double average = GetAverage(allGrades[i]);
+                //assigning level based on average calculated
                 if (average >= 0.0 && average <= 20.0)
                 {
                     randomlevel = "Freshman";
@@ -65,6 +71,11 @@ namespace projects_1
                 }
                 else
                     randomlevel = "Senior";
+
+                //printing results for each student
+                Console.WriteLine($"student: {students[i]}");
+                Console.WriteLine($"average is: {average}");
+                Console.WriteLine($"level is:   {randomlevel}");
             }
 
         }
