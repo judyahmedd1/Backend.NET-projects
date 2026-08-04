@@ -20,7 +20,7 @@ namespace tictactoeproject3
         }
         static void PlayerMove()
         {
-            Console.WriteLine("player " + currentplayer + ", enter a position (1-9): ");
+            Console.WriteLine("player " + currentplayer + ", enter a position between 1 and 9: ");
             int position = int.Parse(Console.ReadLine());
             while (position < 1 || position > 9 || (board[position - 1] == "X" || board[position - 1] == "O"))
             {
