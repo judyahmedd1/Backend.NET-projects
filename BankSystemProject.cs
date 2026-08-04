@@ -1,4 +1,4 @@
-using System;
+using System; 
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -8,35 +8,34 @@ using System.Threading.Tasks;
 namespace project_2
 {
     enum MainMenu
-{
-    CreateAccount = 1,
-    Login,
-    Exit
-}
+    {
+        CreateAccount = 1,
+        Login,
+        Exit
+    }
 
-enum UserMenu
-{
-    CheckBalance = 1,
-    Deposit,
-    Withdraw,
-    TransactionHistory,
-    Logout
-}
+    enum UserMenu
+    {
+        CheckBalance = 1,
+        Deposit,
+        Withdraw,
+        TransactionHistory,
+        Logout
+    }
     internal class BankSystem
     {
-        
-        static List<int> accnumbers = new List<int>();
-        static List<string> accnames = new List<string>();
-        static List<double> accbalance = new List<double>();
-        static List<string> accpins = new List<string>();
-        static List<string> histories = new List<string>();
+
+        static Dictionary<int, string> accnames = new Dictionary<int, string>();
+        static Dictionary<int, double> accbalance = new Dictionary<int, double>();
+        static Dictionary<int, string> accpins = new Dictionary<int, string>();
+        static Dictionary<int, string> histories = new Dictionary<int, string>();
 
         static Random random = new Random();
         static int currentuser = -1;
         static void CreateAccount()
         {
             int accountnumber = random.Next(1, 1000);
-            while (accnumbers.Contains(accountnumber))
+            while (accnames.ContainsKey(accountnumber))
             {
                 accountnumber = random.Next(1, 1000);
             }
@@ -57,51 +56,49 @@ enum UserMenu
 
             Console.WriteLine("enter balance");
             double balance;
-            while (!double.TryParse(Console.ReadLine(), out balance))
+            while (!double.TryParse(Console.ReadLine(), out balance) || balance <= 0)
             {
-                Console.WriteLine("invalid balance");
+                Console.WriteLine("invalid balance, must be a positive number");
             }
 
-            accnumbers.Add(accountnumber);
-            accnames.Add(name);
-            accpins.Add(pin);
-            accbalance.Add(balance);
-            histories.Add("");
+            accnames.Add(accountnumber, name);
+            accpins.Add(accountnumber, pin);
+            accbalance.Add(accountnumber, balance);
+            histories.Add(accountnumber, "");
         }
         static void Login()
         {
             Console.WriteLine("enter account number ");
             int number;
-            while (!int.TryParse(Console.ReadLine(), out number))
+            while (!int.TryParse(Console.ReadLine(), out number) || number <= 0)
             {
-                Console.WriteLine("invalid account number");
+                Console.WriteLine("invalid account number, must be a positive number");
             }
 
             Console.WriteLine("enter pin ");
             string pin = Console.ReadLine();
 
-            for (int i = 0; i < accnumbers.Count; i++)
+            if (accpins.ContainsKey(number) && accpins[number] == pin)
             {
-                if (accnumbers[i] == number && accpins[i] == pin)
-                {
-                    currentuser = i;
-                    Console.WriteLine("login done");
-                    return;
-                }
+                currentuser = number;
+                Console.WriteLine("login successful");
+            }
+            else
+            {
+                Console.WriteLine("wrong account number or pin");
             }
 
-            Console.WriteLine("Wrong account number or pin");
         }
         static void Deposit()
         {
             Console.WriteLine("enter amount to deposit ");
             double amount;
-            while (!double.TryParse(Console.ReadLine(),out amount) || amount <= 0)
+            while (!double.TryParse(Console.ReadLine(), out amount) || amount <= 0)
             {
                 Console.WriteLine("invalid deposit, must be positive number");
             }
             accbalance[currentuser] += amount;
-            histories[currentuser] += $"deposit: {amount} , balance now : {accbalance[currentuser]}\n"; 
+            histories[currentuser] += $"deposit: {amount} , balance now : {accbalance[currentuser]}\n";
             CheckBalance();
         }
 
@@ -109,7 +106,8 @@ enum UserMenu
         {
             Console.WriteLine("enter amount to withdraw ");
             double withdrawamount;
-            while(!double.TryParse(Console.ReadLine(),out withdrawamount)|| withdrawamount <= 0){
+            while (!double.TryParse(Console.ReadLine(), out withdrawamount) || withdrawamount <= 0)
+            {
                 Console.WriteLine("invalid withdraw amount, must be positive number");
             }
             if (accbalance[currentuser] < withdrawamount)
@@ -119,19 +117,18 @@ enum UserMenu
             else
             {
                 accbalance[currentuser] -= withdrawamount;
-                histories[currentuser] += $"withdraw: {withdrawamount} , balance now : {accbalance[currentuser]}\n"; 
+                histories[currentuser] += $"withdraw: {withdrawamount} , balance now : {accbalance[currentuser]}\n";
             }
             CheckBalance();
         }
         static void CheckBalance()
         {
-            Console.WriteLine("current balance is: " + accbalance[currentuser]);
+            Console.WriteLine($"Current balance is: {accbalance[currentuser]:F2}");
         }
 
         static void ViewHistory()
         {
-            int accnum = accnumbers[currentuser];
-            Console.WriteLine($"history of {accnum} is {histories[currentuser]}\n");
+            Console.WriteLine($"History of account {currentuser}:\n{histories[currentuser]}\n");
         }
         static void Main(string[] args)
         {
@@ -148,19 +145,20 @@ enum UserMenu
                         Console.WriteLine("invalid choice");
                     }
 
-                    switch (choice)
+                    switch ((MainMenu)choice)
                     {
-                        case 1:
+                        case MainMenu.CreateAccount:
                             CreateAccount();
                             break;
 
-                        case 2:
+                        case MainMenu.Login:
                             Login();
                             break;
 
-                        case 3:
+                        case MainMenu.Exit:
                             exit = true;
                             break;
+
                         default:
                             Console.WriteLine("invalid choice");
                             break;
@@ -180,28 +178,29 @@ enum UserMenu
                         Console.WriteLine("invalid choice");
                     }
 
-                    switch (choice)
+                    switch ((UserMenu)choice)
                     {
-                        case 1:
+                        case UserMenu.CheckBalance:
                             CheckBalance();
                             break;
 
-                        case 2:
+                        case UserMenu.Deposit:
                             Deposit();
                             break;
 
-                        case 3:
+                        case UserMenu.Withdraw:
                             Withdraw();
                             break;
 
-                        case 4:
+                        case UserMenu.TransactionHistory:
                             ViewHistory();
                             break;
 
-                        case 5:
+                        case UserMenu.Logout:
                             currentuser = -1;
                             Console.WriteLine("logged out");
                             break;
+
                         default:
                             Console.WriteLine("invalid choice");
                             break;
