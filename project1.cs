@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -6,14 +6,22 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace projects_1
 {
     internal class Program
     {
+        enum Randomlevel
+        {
+            Freshman = 1,
+            Sophomore,
+            Junior,
+            Senior
+        }
         static double GetAverage(List<double> grades)
         {
-            //ensure no divison by zero 
+          //ensure no divison by zero 
             if (grades.Count == 0)
                 return 0.0;
 
@@ -39,45 +47,36 @@ namespace projects_1
             //            Average 60 – 100 → Senior
 
 
-            List<string> students = new List<string>();
-            students.Add("judy");
-            students.Add("hana");
-            students.Add("menna");
+            Dictionary<string, List<double>> students =  new Dictionary<string, List<double>>();
 
-            //assigning values to grades' lists
-            List<double> judygrades = new List<double> { 15, 18, 20 };
-            List<double> hanagrades = new List<double> { 35, 40, 38 };
-            List<double> mennagrades = new List<double> { 55, 60, 58 };
-            List<List<double>> allGrades = new List<List<double>> {
-               judygrades, hanagrades, mennagrades
-            };
+            students.Add("judy", new List<double> { 15, 18, 20 });
+            students.Add("hana", new List<double> { 35, 40, 38 });
+            students.Add("menna", new List<double> { 55, 60, 58 });
 
-            string randomlevel;
-            for (int i = 0; i < students.Count; i++)
+            //list to get count of all names to be used in loop
+            List<string> studentnames = new List<string>(students.Keys);
+
+
+            Randomlevel level;
+
+            for (int i = 0; i < studentnames.Count; i++)
             {
-                double average = GetAverage(allGrades[i]);
-                //assigning level based on average calculated
-                if (average >= 0.0 && average <= 20.0)
-                {
-                    randomlevel = "Freshman";
-                }
-                else if (average > 20.0 && average <= 40.0)
-                {
-                    randomlevel = "Sophomore";
-                }
-                else if (average > 40.0 && average <= 60.0)
-                {
-                    randomlevel = "Junior";
-                }
+                string currentstudent = studentnames[i];
+
+                double average = GetAverage(students[currentstudent]);
+
+                if (average <= 20)
+                    level = Randomlevel.Freshman;
+                else if (average <= 40)
+                    level = Randomlevel.Sophomore;
+                else if (average <= 60)
+                    level = Randomlevel.Junior;
                 else
-                    randomlevel = "Senior";
+                    level = Randomlevel.Senior;
 
-                //printing results for each student
-                Console.WriteLine($"student: {students[i]}");
-                Console.WriteLine($"average is: {average}");
-                Console.WriteLine($"level is: {randomlevel}");
+                Console.WriteLine($"student: {currentstudent}\naverage is: {average:F2}\nrandom level is: {level}\n");
             }
-
+            
         }
     }
 }
