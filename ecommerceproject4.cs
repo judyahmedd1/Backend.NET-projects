@@ -36,29 +36,24 @@ namespace project4c_andoop
 
         public User Login(int id, string name, string password)
         {
-            //trygetvalue over contains key so that actual object is handed and u.Name/u.Password be used
             if (!_users.TryGetValue(id, out User u))
-                {
-                    Console.WriteLine("login failed.\nid doesn't exist\n");
-                    return null;
-                }
-            else
-                { 
-                 if (u.Name != name || u.Password != password)
-                    {
-                        Console.WriteLine("login failed.\nincorrect name or password\n");
-                        return null;
-                    }
-                 else
-                    {
-                        Console.WriteLine("successful login");
-                        return u;
-                    }
-                 }
+            {
+                Console.WriteLine("login failed.\nid doesn't exist\n");
+                return null;
             }
+
+            if (u.Name != name || u.Password != password)
+            {
+                Console.WriteLine("login failed.\nincorrect name or password\n");
+                return null;
+            }
+
+            Console.WriteLine("successful login\n");
+            return u;
         }
-       
     }
+
+}
     //just representing what a user (customer/admin) is
     internal class User
     {
@@ -282,6 +277,14 @@ internal class Cart
                 break;
             }
         }
+
+        if (itemToRemove == null)
+        {
+            Console.WriteLine("product not in cart");
+            return;
+        }
+
+        _items.Remove(itemToRemove);
     }
 
     public List<CartItem> GetItems()
@@ -396,7 +399,7 @@ internal class OrderService
     {
         if (cart == null || cart.GetItems().Count == 0)
         {
-            Console.WriteLine("can't checkout cart is empty");
+            Console.WriteLine("cannot checkout: cart is empty");
             return null;
         }
 
@@ -423,29 +426,206 @@ internal class OrderService
     }
 }
 internal class Program
+{
+    static void Main(string[] args)
+    {
+        UserManager userManager = new UserManager();
+        ProductManager productManager = new ProductManager();
+        OrderService orderService = new OrderService();
+
+        Console.WriteLine("1.Register");
+        Console.WriteLine("2.Login");
+        string choice = Console.ReadLine();
+
+        if (choice == "1")
         {
-            static void Main(string[] args)
+            Console.WriteLine("Register as: 1. Customer  2. Admin");
+            string rolechoice = Console.ReadLine();
+
+            Console.WriteLine("enter your name");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("enter your password");
+            string password = Console.ReadLine();
+
+            if (rolechoice == "1")
             {
-                UserManager manager = new UserManager();
+                Customer c = userManager.RegisterCustomer(name, password);
+                Console.WriteLine($"registered, your id is {c.Id}");
+            }
+            else if (rolechoice == "2")
+            {
+                Admin a = userManager.RegisterAdmin(name, password);
+                Console.WriteLine($"registered your id is {a.Id}");
+            }
+        }
+        else if (choice == "2")
+        {
+            Console.WriteLine("enter your id");
+            string idInput = Console.ReadLine();
 
-                while (true)
+            if (!int.TryParse(idInput, out int id))
+            {
+                Console.WriteLine("invalid id format");
+                return;
+            }
+
+            Console.WriteLine("enter your name");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("enter your password");
+            string password = Console.ReadLine();
+
+            User loggedInUser = userManager.Login(id, name, password);
+
+            if (loggedInUser == null)
+            {
+                return; 
+            }
+            //downcasting
+            if (loggedInUser is Admin)
+            {
+                RunAdminMenu((Admin)loggedInUser, productManager);
+            }
+            else if (loggedInUser is Customer)
+            {
+                RunCustomerMenu((Customer)loggedInUser, productManager, orderService);
+            }
+        }
+    }
+    static void RunAdminMenu(Admin admin, ProductManager productManager)
+    {
+        while (true)
+        {
+            Console.WriteLine("1. Add Product  2. Update Product  3. Delete Product  4. Logout");
+            string choice = Console.ReadLine();
+
+            if (choice == "1")
+            {
+                Console.WriteLine("product name:");
+                string name = Console.ReadLine();
+
+                Console.WriteLine("price:");
+                decimal.TryParse(Console.ReadLine(), out decimal price);
+
+                Console.WriteLine("stock quantity:");
+                int.TryParse(Console.ReadLine(), out int stock);
+
+                Product p = productManager.AddProduct(name, price, stock);
+                Console.WriteLine($"added product {p.Id}");
+            }
+            else if (choice == "2")
+            {
+                Console.WriteLine("product id to update:");
+                int.TryParse(Console.ReadLine(), out int id);
+
+                Console.WriteLine("new name:");
+                string name = Console.ReadLine();
+
+                Console.WriteLine("new price:");
+                decimal.TryParse(Console.ReadLine(), out decimal price);
+
+                Console.WriteLine("new stock:");
+                int.TryParse(Console.ReadLine(), out int stock);
+
+                productManager.UpdateProduct(id, name, price, stock);
+            }
+            else if (choice == "3")
+            {
+                Console.WriteLine("product id to delete:");
+                int.TryParse(Console.ReadLine(), out int id);
+                productManager.DeleteProduct(id);
+            }
+            else if (choice == "4")
+            {
+                return; 
+            }
+        }
+    }
+    static void RunCustomerMenu(Customer customer, ProductManager productManager, OrderService orderService)
+    {
+        Cart cart = new Cart();
+
+        while (true)
+        {
+            Console.WriteLine("1. View Products  2. Add to Cart  3. View Cart  4. Checkout  5. Logout");
+            string choice = Console.ReadLine();
+
+            if (choice == "1")
+            {
+                List<Product> products = productManager.GetAllProducts();
+                for (int i = 0; i < products.Count; i++)
                 {
-                    Console.WriteLine("enter your id");
-                    string idInput = Console.ReadLine();
-
-                    if (!int.TryParse(idInput, out int id))
-                    {
-                        Console.WriteLine("invalid id format");
-                        continue;
-                    }
-
-                    Console.WriteLine("enter your name");
-                    string name = Console.ReadLine();
-
-                    Console.WriteLine("enter your password");
-                    string password = Console.ReadLine();
-
+                    Product p = products[i];
+                    Console.WriteLine($"{p.Id}: {p.Name} - {p.Price} (stock: {p.StockQuantity})");
                 }
             }
-        } 
+            else if (choice == "2")
+            {
+                Console.WriteLine("product id");
+                int.TryParse(Console.ReadLine(), out int id);
+
+                Console.WriteLine("quantity");
+                int.TryParse(Console.ReadLine(), out int qty);
+
+                Product p = productManager.GetProduct(id);
+                if (p == null)
+                {
+                    Console.WriteLine("product not found");
+                    continue;
+                }
+
+                cart.AddProduct(p, qty);
+            }
+            else if (choice == "3")
+            {
+                List<CartItem> items = cart.GetItems();
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    CartItem item = items[i];
+                    Console.WriteLine($"{item.Product.Name} x{item.Quantity} = {item.Getsubtotal()}");
+                }
+
+                Console.WriteLine($"Total: {cart.CalculateTotal()}");
+            }
+            else if (choice == "4")
+            {
+                Console.WriteLine("Payment method: 1. Credit Card  2. PayPal  3. Cash");
+                string payChoice = Console.ReadLine();
+
+                IPayment payment;
+
+                if (payChoice == "1")
+                {
+                    Console.WriteLine("card number");
+                    payment = new CreditCardPayment(Console.ReadLine());
+                }
+                else if (payChoice == "2")
+                {
+                    Console.WriteLine("email");
+                    payment = new PayPalPayment(Console.ReadLine());
+                }
+                else
+                {
+                    payment = new CashPayment();
+                }
+
+                Order order = orderService.ProcessOrder(cart, payment);
+
+                if (order != null)
+                {
+                    // fresh empty cart after successful checkout
+                        cart = new Cart(); 
+                }
+            }
+            else if (choice == "5")
+            {
+                return;
+            }
+        }
+    }
+}
+           
+            
 
