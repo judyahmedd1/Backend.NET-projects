@@ -396,7 +396,7 @@ internal class OrderService
     {
         if (cart == null || cart.GetItems().Count == 0)
         {
-            Console.WriteLine("cannot checkout: cart is empty");
+            Console.WriteLine("can't checkout cart is empty");
             return null;
         }
 
