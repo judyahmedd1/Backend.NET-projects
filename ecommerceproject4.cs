@@ -178,7 +178,7 @@ internal class ProductManager
     {
         if (!_products.TryGetValue(id, out Product p))
         {
-            Console.WriteLine("update failed, product id doesn't exist");
+            Console.WriteLine("update failed\nproduct id doesn't exist");
             return false;
         }
 
@@ -192,7 +192,7 @@ internal class ProductManager
     {
         if (!_products.ContainsKey(id))
         {
-            Console.WriteLine("delete failed, product id doesn't exist");
+            Console.WriteLine("delete failed\nproduct id doesn't exist");
             return false;
         }
 
@@ -399,7 +399,7 @@ internal class OrderService
     {
         if (cart == null || cart.GetItems().Count == 0)
         {
-            Console.WriteLine("cannot checkout: cart is empty");
+            Console.WriteLine("cannot checkout\ncart is empty");
             return null;
         }
 
@@ -409,7 +409,7 @@ internal class OrderService
 
         if (!paymentSuccess)
         {
-            Console.WriteLine("payment failed, order not created");
+            Console.WriteLine("payment failed\norder not created");
             return null;
         }
 
@@ -422,7 +422,7 @@ internal class OrderService
 
     private void SendNotification(Order order)
     {
-        Console.WriteLine($"order {order.Id} is placed successfully, total is: {order.TotalPrice}");
+        Console.WriteLine($"order {order.Id} is placed successfully\ntotal is: {order.TotalPrice}");
     }
 }
 internal class Program
@@ -451,12 +451,12 @@ internal class Program
             if (rolechoice == "1")
             {
                 Customer c = userManager.RegisterCustomer(name, password);
-                Console.WriteLine($"registered, your id is {c.Id}");
+                Console.WriteLine($"registered\nyour id is {c.Id}");
             }
             else if (rolechoice == "2")
             {
                 Admin a = userManager.RegisterAdmin(name, password);
-                Console.WriteLine($"registered your id is {a.Id}");
+                Console.WriteLine($"registered\nyour id is {a.Id}");
             }
         }
         else if (choice == "2")
