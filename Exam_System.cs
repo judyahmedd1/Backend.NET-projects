@@ -132,17 +132,30 @@ namespace Exam_System
             }
         }
 
-        public string Password
-        {
-            get { return _UserPassword; }
-            set
-            {
-                if (string.IsNullOrEmpty(value) || value.Length < ValidationRules.MinPasswordLength)
-                    throw new ArgumentException(ErrorMessages.PasswordTooShort);
-                _UserPassword = value;
-            }
-        }
+        private string _UserPassword;
 
+public bool ChangePassword(string oldPassword, string newPassword)
+{
+    // 1. Is this really the user?
+    if (oldPassword != _UserPassword)
+        return false;
+
+    if (string.IsNullOrEmpty(newPassword))
+        throw new ArgumentException("Password cannot be empty.");
+    
+    if (newPassword.Length < ValidationRules.MinPasswordLength)
+        throw new ArgumentException(ErrorMessages.PasswordTooShort);
+
+    if (newPassword == _UserPassword)
+        throw new ArgumentException("New password must be different from the old one.");
+
+    _UserPassword = newPassword;
+    return true;
+}
+        public bool CheckPassword(string input)
+{
+    return input == _UserPassword;
+}
         protected User(string name, string email, string password)
         {
             _IdCounter++;
